@@ -38,14 +38,14 @@ def scripts(directory='bin/*') -> []:
     return glob.glob( directory )
 
 
-setup(name='kbr.dbase',
+setup(name='kbr.dbase.postgres',
       version= get_version(),
       description='python utils and tools collection',
       url='https://github.com/brugger/kbr-tools/',
       author='Kim Brugger',
       author_email='kbr@brugger.dk',
       license='MIT',
-      packages=['kbr.dbase'],
+      packages=['kbr.dbase.postgres'],
       install_requires=get_requirements(),
       classifiers=[
         'License :: MIT License',

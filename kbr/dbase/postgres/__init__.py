@@ -5,19 +5,9 @@ Generica low level function for interacting with a database through the records 
 
 """
 
-
-import re
-import os
-import pprint
-pp = pprint.PrettyPrinter(indent=4)
-
-
 import kbr.db_utils as db_utils
 
 db = None
-
-
-print("Imported postgres_utils")
 
 def _connected() -> None:
     if db is None:
@@ -34,6 +24,13 @@ def user_get(name:str) -> dict:
     q = f"pg_catalog.pg_roles WHERE rolname = '{name}'"
     _connected()
     return db.get_single(q)
+
+def user_list() -> dict:
+
+    q = f"SELECT rolname, rolsuper FROM pg_catalog.pg_roles WHERE rolcanlogin"
+    _connected()
+    return db.get_as_dict(q)
+
 
 def user_create(name:str, passwd:str) -> None:
     q = f"CREATE ROLE {name} LOGIN PASSWORD '{passwd}';"
@@ -63,6 +60,12 @@ def database_delete(dbname:str) -> None:
     return db.do(q)
 
 
+def database_list() -> None:
+    q = f"SELECT datname FROM pg_database WHERE datistemplate = false;"
+    return db.get_as_dict(q)
+
+
+
 def tables_list() -> list:
     return db.table_names()
 
@@ -75,7 +78,6 @@ def table_details(tbl_name:str) -> dict:
 
     return db.get_as_dict(q)
 
+def tables_create(filename:str) -> dict:
 
-
-
-
+    return db.from_file(filename)

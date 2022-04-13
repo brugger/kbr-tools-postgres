@@ -64,8 +64,6 @@ def database_list() -> None:
     q = f"SELECT datname FROM pg_database WHERE datistemplate = false;"
     return db.get_as_dict(q)
 
-
-
 def tables_list() -> list:
     return db.table_names()
 
@@ -74,10 +72,33 @@ def tables_delete() -> None:
     return db.drop_tables()
 
 def table_details(tbl_name:str) -> dict:
-    q = f"SELECT column_name, data_type  FROM information_schema.columns WHERE  table_name = '{tbl_name}';"
+    q = f"SELECT column_name, data_type, , is_nullable FROM information_schema.columns WHERE  table_name = '{tbl_name}'  ORDER BY dtd_identifier;"
 
     return db.get_as_dict(q)
 
 def tables_create(filename:str) -> dict:
 
     return db.from_file(filename)
+
+
+def table_foreign_keys(tbl_name:str) -> dict:
+    q = f"""
+SELECT
+    tc.table_schema, 
+    tc.constraint_name, 
+    tc.table_name, 
+    kcu.column_name, 
+    ccu.table_schema AS foreign_table_schema,
+    ccu.table_name AS foreign_table_name,
+    ccu.column_name AS foreign_column_name 
+FROM 
+    information_schema.table_constraints AS tc 
+    JOIN information_schema.key_column_usage AS kcu
+      ON tc.constraint_name = kcu.constraint_name
+      AND tc.table_schema = kcu.table_schema
+    JOIN information_schema.constraint_column_usage AS ccu
+      ON ccu.constraint_name = tc.constraint_name
+      AND ccu.table_schema = tc.table_schema
+WHERE tc.constraint_type = 'FOREIGN KEY' AND tc.table_name='{tbl_name}';"""
+
+    return db.get_as_dict(q)

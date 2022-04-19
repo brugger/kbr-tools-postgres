@@ -14,7 +14,7 @@ def package_files(directory):
             if filename.endswith("~"):
                 continue
             paths.append(os.path.join(path, filename))
-    print( paths )
+#    print( paths )
     return paths
 
 def get_version():
@@ -30,7 +30,7 @@ def get_requirements():
     file_handle.close()
 
 
-    print( data )
+#    print( data )
     return data.split("\n")
 #    return "{}.{}.{}".format( data['major'], data['minor'], data['patch'])
 

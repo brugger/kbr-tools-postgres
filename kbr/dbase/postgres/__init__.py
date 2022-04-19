@@ -14,6 +14,7 @@ class DB(db_utils.DB):
         kwargs['isolation_level']="AUTOCOMMIT"
         self._db = records.Database( uri, **kwargs )
         self._fetchall = False
+        self._uri = uri
     
     
     def user_get(self, name:str) -> dict:
@@ -57,6 +58,7 @@ class DB(db_utils.DB):
     
     def database_list(self) -> None:
         q = f"SELECT datname FROM pg_database WHERE datistemplate = false;"
+        q = 'SELECT d.datname as "name", pg_catalog.pg_get_userbyid(d.datdba) as "owner" FROM pg_catalog.pg_database d ORDER BY 1'
         return self.get_as_dict(q)
 
     def database_change_owner( self, database:str, new_role:str) -> None:
@@ -65,8 +67,11 @@ class DB(db_utils.DB):
 
 
     def tables_list(self) -> list:
-        return self.table_names()
+        q = "select tablename, tableowner from pg_catalog.pg_tables where schemaname = 'public';"
+        return self.get_as_dict(q )
     
+
+
     def tables_change_owner( self, old_role:str, new_role:str) -> None:
         q = f"REASSIGN OWNED BY {old_role} to {new_role};"
 

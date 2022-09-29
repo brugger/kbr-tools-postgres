@@ -77,6 +77,9 @@ class DB(db_utils.DB):
 
         return self.do(q)
 
+    def table_delete(self, table_name) -> None:
+        return self.drop_table( table_name)
+
     def tables_delete(self) -> None:
         return self.drop_tables()
     
